@@ -19,7 +19,7 @@ const scene = new THREE.Scene()
  */
 const textureLoader = new THREE.TextureLoader()
 
-// Door texture
+// Door
 const doorColourTexture = textureLoader.load('/textures/door/color.jpg')
 const doorAlphaTexture = textureLoader.load('/textures/door/alpha.jpg')
 const doorAmbientOcclusionTexture = textureLoader.load('/textures/door/ambientOcclusion.jpg')
@@ -30,6 +30,19 @@ const doorRoughnessTexture = textureLoader.load('/textures/door/roughness.jpg')
 
 doorColourTexture.colorSpace = THREE.SRGBColorSpace
 
+// Walls
+const bricksColourTexture = textureLoader.load('/textures/bricks/color.jpg')
+const bricksAmbientOcclusionTexture = textureLoader.load('/textures/bricks/ambientOcclusion.jpg')
+const bricksNormalTexture = textureLoader.load('/textures/bricks/normal.jpg')
+const bricksRoughnessTexture = textureLoader.load('/textures/bricks/roughness.jpg')
+
+bricksColourTexture.SRGBColorSpace = THREE.SRGBColorSpace
+
+
+
+
+
+
 /**
  * House
  */
@@ -39,7 +52,12 @@ scene.add(house)
 // Walls
 const walls = new THREE.Mesh(
     new THREE.BoxGeometry(4, 2.5, 4),
-    new THREE.MeshStandardMaterial({ color: '#ac8e82' })
+    new THREE.MeshStandardMaterial({
+        map: bricksColourTexture,
+        aoMap: bricksAmbientOcclusionTexture,
+        normalMap: bricksNormalTexture,
+        roughnessMap: bricksRoughnessTexture
+    })
 )
 
 walls.position.y = 1.25 //Move box up as half of height is below floor
@@ -57,7 +75,7 @@ house.add(roof)
 
 // Door
 const door = new THREE.Mesh(
-    new THREE.PlaneGeometry(2, 2, 100, 100), //Add more subdivisions to get some reliefs
+    new THREE.PlaneGeometry(2.2, 2.2, 100, 100), //Add more subdivisions to get some reliefs
     new THREE.MeshStandardMaterial({
         map: doorColourTexture,
         transparent: true,
