@@ -19,6 +19,17 @@ const scene = new THREE.Scene()
  */
 const textureLoader = new THREE.TextureLoader()
 
+// Door texture
+const doorColourTexture = textureLoader.load('/textures/door/color.jpg')
+const doorAlphaTexture = textureLoader.load('/textures/door/alpha.jpg')
+const doorAmbientOcclusionTexture = textureLoader.load('/textures/door/ambientOcclusion.jpg')
+const doorHeightTexture = textureLoader.load('/textures/door/height.jpg')
+const doorNormalTexture = textureLoader.load('/textures/door/normal.jpg')
+const doorMetalnessTexture = textureLoader.load('/textures/door/metalness.jpg')
+const doorRoughnessTexture = textureLoader.load('/textures/door/roughness.jpg')
+
+doorColourTexture.colorSpace = THREE.SRGBColorSpace
+
 /**
  * House
  */
@@ -46,8 +57,18 @@ house.add(roof)
 
 // Door
 const door = new THREE.Mesh(
-    new THREE.PlaneGeometry(2, 2),
-    new THREE.MeshStandardMaterial({ color: '#aa7b7b' })
+    new THREE.PlaneGeometry(2, 2, 100, 100), //Add more subdivisions to get some reliefs
+    new THREE.MeshStandardMaterial({
+        map: doorColourTexture,
+        transparent: true,
+        alphaMap: doorAlphaTexture,
+        aoMap: doorAmbientOcclusionTexture,
+        displacementMap: doorHeightTexture,
+        displacementScale: 0.1,
+        normalMap: doorNormalTexture,
+        metalnessMap: doorMetalnessTexture,
+        roughnessMap: doorRoughnessTexture
+    })
 )
 
 door.position.y = door.geometry.parameters.height / 2
@@ -142,6 +163,20 @@ const doorLight = new THREE.PointLight('#ff7d46', 3, 7)
 doorLight.position.set(0, 2.2, walls.geometry.parameters.depth / 2 + 0.5)
 house.add(doorLight)
 
+
+/**
+ * Fog
+*/
+const fog = new THREE.Fog('#262837', 1, 15)
+scene.fog = fog
+
+
+
+
+
+
+
+
 /**
  * Sizes
  */
@@ -187,6 +222,7 @@ const renderer = new THREE.WebGLRenderer({
 })
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.setClearColor('#262837') //Set background to be the same colour as the fog, much cooler
 
 /**
  * Animate
