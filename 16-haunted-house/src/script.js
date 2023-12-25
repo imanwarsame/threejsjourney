@@ -59,9 +59,66 @@ const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(20, 20),
     new THREE.MeshStandardMaterial({ color: '#a9c388' })
 )
+
 floor.rotation.x = - Math.PI * 0.5
 floor.position.y = 0
 scene.add(floor)
+
+
+// Bushes
+const bushGeometry = new THREE.SphereGeometry(1, 16, 16) //Create geometry ONCE and generate multiple meshes. More performant
+const bushMaterial = new THREE.MeshStandardMaterial({ color: '#89c854' })
+
+const bush1 = new THREE.Mesh(bushGeometry, bushMaterial)
+bush1.scale.set(0.5, 0.5, 0.5)
+bush1.position.set(0.8, 0.2, 2.2)
+
+const bush2 = new THREE.Mesh(bushGeometry, bushMaterial)
+bush2.scale.set(0.25, 0.25, 0.25)
+bush2.position.set(1.4, 0.1, 2.1)
+
+const bush3 = new THREE.Mesh(bushGeometry, bushMaterial)
+bush3.scale.set(0.4, 0.4, 0.4)
+bush3.position.set(- 0.8, 0.1, 2.2)
+
+const bush4 = new THREE.Mesh(bushGeometry, bushMaterial)
+bush4.scale.set(0.15, 0.15, 0.15)
+bush4.position.set(- 1, 0.05, 2.6)
+
+house.add(bush1, bush2, bush3, bush4)
+
+
+/**
+ * Graves
+ */
+const graves = new THREE.Group()
+scene.add(graves)
+
+const graveGeometry = new THREE.BoxGeometry(0.6, 0.8, 0.2) //Create geometry ONCE and generate multiple meshes. More performant
+const graveMaterial = new THREE.MeshStandardMaterial({ color: '#b2b6b1' }) 
+
+//Generate random graves in a circular arrangement around the house
+for (let i = 0; i < 50; i++) {
+    const angle = Math.random() * Math.PI * 2 //Random angle
+    const maxHouseWidth = Math.max(walls.geometry.parameters.width, walls.geometry.parameters.depth)
+    const radius = (Math.random() * ((floor.geometry.parameters.width / 2) - (maxHouseWidth))) +  maxHouseWidth //Random radius
+
+    // Get x and z positions of grave
+    const x = Math.cos(angle) * radius
+    const z = Math.sin(angle) * radius
+    
+    //Create mesh & move to new locations
+    const graveMesh = new THREE.Mesh(graveGeometry, graveMaterial)
+    graveMesh.position.set(x, graveGeometry.parameters.height / 2 - 0.1, z)
+
+    //Rotate slightly (and randomly) to give them a bit of character
+    graveMesh.rotation.y = (Math.random() - 0.5) * 0.4
+    graveMesh.rotation.z = (Math.random() - 0.5) * 0.4
+
+    graves.add(graveMesh)
+}
+
+
 
 /**
  * Lights
