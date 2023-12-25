@@ -38,7 +38,30 @@ const bricksRoughnessTexture = textureLoader.load('/textures/bricks/roughness.jp
 
 bricksColourTexture.SRGBColorSpace = THREE.SRGBColorSpace
 
+// Floor
+const grassColourTexture = textureLoader.load('/textures/grass/color.jpg')
+const grassAmbientOcclusionTexture = textureLoader.load('/textures/grass/ambientOcclusion.jpg')
+const grassNormalTexture = textureLoader.load('/textures/grass/normal.jpg')
+const grassRoughnessTexture = textureLoader.load('/textures/grass/roughness.jpg')
 
+grassColourTexture.SRGBColorSpace = THREE.SRGBColorSpace
+
+// Repeat each grass texture
+grassColourTexture.repeat.set(8, 8)
+grassAmbientOcclusionTexture.repeat.set(8, 8)
+grassNormalTexture.repeat.set(8, 8)
+grassRoughnessTexture.repeat.set(8, 8)
+
+// Change the wrapS and wrapT properties to activate the repeat
+grassColourTexture.wrapS = THREE.RepeatWrapping
+grassAmbientOcclusionTexture.wrapS = THREE.RepeatWrapping
+grassNormalTexture.wrapS = THREE.RepeatWrapping
+grassRoughnessTexture.wrapS = THREE.RepeatWrapping
+
+grassColourTexture.wrapT = THREE.RepeatWrapping
+grassAmbientOcclusionTexture.wrapT = THREE.RepeatWrapping
+grassNormalTexture.wrapT = THREE.RepeatWrapping
+grassRoughnessTexture.wrapT = THREE.RepeatWrapping
 
 
 
@@ -96,7 +119,12 @@ house.add(door)
 // Floor
 const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(20, 20),
-    new THREE.MeshStandardMaterial({ color: '#a9c388' })
+    new THREE.MeshStandardMaterial({
+        map: grassColourTexture,
+        aoMap: grassAmbientOcclusionTexture,
+        normalMap: grassNormalTexture,
+        roughnessMap: grassRoughnessTexture
+    })
 )
 
 floor.rotation.x = - Math.PI * 0.5
