@@ -174,6 +174,11 @@ const tick = () =>
     // Update controls
     controls.update()
 
+    // Rotate the galaxy
+    if (galaxyPoints !== null) {
+        galaxyPoints.rotation.y = elapsedTime * 0.05
+    }
+
     // Render
     renderer.render(scene, camera)
 
