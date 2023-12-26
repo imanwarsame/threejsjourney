@@ -25,10 +25,24 @@ const scene = new THREE.Scene()
  */
 const galaxyParameters = {
     count: 1000,
+    size: 0.02
 }
 
+let galaxyGeometry = null
+let galaxyMaterial = null
+let galaxyPoints = null
+
 const generateGalaxy = () => {
-    const particlesGeometry = new THREE.BufferGeometry()
+    //Destroy old geometry
+    console.log(galaxyMaterial);
+    if (galaxyPoints !== null) {
+        galaxyGeometry.dispose()
+        galaxyMaterial.dispose()
+        scene.remove(galaxyPoints)
+    }
+
+
+    galaxyGeometry = new THREE.BufferGeometry()
 
     // Array containing each particle positions [x,y,z, x,y,z, ...]
     const positions = new Float32Array(galaxyParameters.count * 3)
@@ -40,22 +54,26 @@ const generateGalaxy = () => {
     }
 
     // Create the Three.js BufferAttribute and specify that each object is composed of 3 parameters
-    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+    galaxyGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
 
     // Material
-    const particlesMaterial = new THREE.PointsMaterial({
-        size: 0.02,
+    galaxyMaterial = new THREE.PointsMaterial({
+        size: galaxyParameters.size,
         sizeAttenuation: true, // Specify if distant particles should be smaller than close particles
         depthWrite: true,
         blending: THREE.AdditiveBlending
     })
 
     // Points
-    const particles = new THREE.Points(particlesGeometry, particlesMaterial)
-    scene.add(particles)
+    galaxyPoints = new THREE.Points(galaxyGeometry, galaxyMaterial)
+    scene.add(galaxyPoints)
 }
 
 generateGalaxy()
+
+// Add tweaks
+gui.add(galaxyParameters, 'count').min(100).max(100000).step(100).onFinishChange(generateGalaxy)
+gui.add(galaxyParameters, 'size').min(0.001).max(0.1).step(0.001).onFinishChange(generateGalaxy)
 
 /**
  * Sizes
