@@ -28,7 +28,11 @@ const galaxyParameters = {
     size: 0.01,
     radius: 5,
     branches: 3,
-    spin: 1
+    spin: 1,
+    randomness: 0.2,
+    randomnessPower: 3,
+    insideColour: '#ff6030',
+    outsideColour: '#1b3984'
 }
 
 let galaxyGeometry = null
@@ -49,27 +53,48 @@ const generateGalaxy = () => {
 
     // Array containing each particle positions [x,y,z, x,y,z, ...]
     const positions = new Float32Array(galaxyParameters.count * 3)
+    const colours = new Float32Array(galaxyParameters.count * 3)
+
+    // Inside and outside colours
+    const colourInside = new THREE.Color(galaxyParameters.insideColour)
+    const colourOutside = new THREE.Color(galaxyParameters.outsideColour)
 
     // Loop through the number of particles to generate x, y & z properties
     for (let i = 0; i < galaxyParameters.count; i++) {
         const radius = Math.random() * galaxyParameters.radius
         const spinAngle = radius * galaxyParameters.spin
         const branchAngle = ((i % galaxyParameters.branches) / galaxyParameters.branches) * Math.PI * 2
+        
+        // Mixed colour based on distance from centre
+        const mixedColour = colourInside.clone() // Clone colour to avoid changing the original
+        mixedColour.lerp(colourOutside, radius / galaxyParameters.radius) // Mix!
 
-        positions[(i * 3) + 0] = Math.cos(branchAngle + spinAngle) * radius
-        positions[(i * 3) + 1] = 0
-        positions[(i * 3) + 2] = Math.sin(branchAngle + spinAngle) * radius
+        const randomX = Math.pow(Math.random(), galaxyParameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * (galaxyParameters.randomness * radius)
+        const randomY = Math.pow(Math.random(), galaxyParameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * (galaxyParameters.randomness * radius)
+        const randomZ = Math.pow(Math.random(), galaxyParameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * (galaxyParameters.randomness * radius)
+
+        positions[(i * 3) + 0] = Math.cos(branchAngle + spinAngle) * radius + randomX
+        positions[(i * 3) + 1] = 0 + randomY
+        positions[(i * 3) + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ
+
+        colours[(i * 3) + 0] = mixedColour.r
+        colours[(i * 3) + 1] = mixedColour.g
+        colours[(i * 3) + 2] = mixedColour.b
     }
 
     // Create the Three.js BufferAttribute and specify that each object is composed of 3 parameters
     galaxyGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+
+    // Add colours
+    galaxyGeometry.setAttribute('color', new THREE.BufferAttribute(colours, 3))
 
     // Material
     galaxyMaterial = new THREE.PointsMaterial({
         size: galaxyParameters.size,
         sizeAttenuation: true, // Specify if distant particles should be smaller than close particles
         depthWrite: true,
-        blending: THREE.AdditiveBlending
+        blending: THREE.AdditiveBlending,
+        vertexColors: true
     })
 
     // Points
@@ -85,7 +110,10 @@ gui.add(galaxyParameters, 'size').min(0.001).max(0.1).step(0.001).onFinishChange
 gui.add(galaxyParameters, 'radius').min(0.01).max(20).step(0.01).onFinishChange(generateGalaxy)
 gui.add(galaxyParameters, 'branches').min(2).max(20).step(1).onFinishChange(generateGalaxy)
 gui.add(galaxyParameters, 'spin').min(-5).max(5).step(0.001).onFinishChange(generateGalaxy)
-
+gui.add(galaxyParameters, 'randomness').min(0).max(2).step(0.001).onFinishChange(generateGalaxy)
+gui.add(galaxyParameters, 'randomnessPower').min(1).max(10).step(0.001).onFinishChange(generateGalaxy)
+gui.addColor(galaxyParameters, 'insideColour').onFinishChange(generateGalaxy)
+gui.addColor(galaxyParameters, 'outsideColour').onFinishChange(generateGalaxy)
 /**
  * Sizes
  */
