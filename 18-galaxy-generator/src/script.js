@@ -32,7 +32,8 @@ const galaxyParameters = {
     randomness: 0.2,
     randomnessPower: 3,
     insideColour: '#ff6030',
-    outsideColour: '#1b3984'
+    outsideColour: '#1b3984',
+    speed: 0.05
 }
 
 let galaxyGeometry = null
@@ -112,8 +113,11 @@ gui.add(galaxyParameters, 'branches').min(2).max(20).step(1).onFinishChange(gene
 gui.add(galaxyParameters, 'spin').min(-5).max(5).step(0.001).onFinishChange(generateGalaxy)
 gui.add(galaxyParameters, 'randomness').min(0).max(2).step(0.001).onFinishChange(generateGalaxy)
 gui.add(galaxyParameters, 'randomnessPower').min(1).max(10).step(0.001).onFinishChange(generateGalaxy)
+gui.add(galaxyParameters, 'speed').min(0).max(5).step(0.05).onFinishChange(generateGalaxy)
 gui.addColor(galaxyParameters, 'insideColour').onFinishChange(generateGalaxy)
 gui.addColor(galaxyParameters, 'outsideColour').onFinishChange(generateGalaxy)
+
+
 /**
  * Sizes
  */
@@ -176,7 +180,7 @@ const tick = () =>
 
     // Rotate the galaxy
     if (galaxyPoints !== null) {
-        galaxyPoints.rotation.y = elapsedTime * 0.05
+        galaxyPoints.rotation.y = elapsedTime * galaxyParameters.speed
     }
 
     // Render
