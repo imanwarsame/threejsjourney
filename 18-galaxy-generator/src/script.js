@@ -27,7 +27,8 @@ const galaxyParameters = {
     count: 100000,
     size: 0.01,
     radius: 5,
-    branches: 3
+    branches: 3,
+    spin: 1
 }
 
 let galaxyGeometry = null
@@ -52,11 +53,12 @@ const generateGalaxy = () => {
     // Loop through the number of particles to generate x, y & z properties
     for (let i = 0; i < galaxyParameters.count; i++) {
         const radius = Math.random() * galaxyParameters.radius
+        const spinAngle = radius * galaxyParameters.spin
         const branchAngle = ((i % galaxyParameters.branches) / galaxyParameters.branches) * Math.PI * 2
 
-        positions[(i * 3) + 0] = Math.cos(branchAngle) * radius
+        positions[(i * 3) + 0] = Math.cos(branchAngle + spinAngle) * radius
         positions[(i * 3) + 1] = 0
-        positions[(i * 3) + 2] = Math.sin(branchAngle) * radius
+        positions[(i * 3) + 2] = Math.sin(branchAngle + spinAngle) * radius
     }
 
     // Create the Three.js BufferAttribute and specify that each object is composed of 3 parameters
@@ -82,6 +84,7 @@ gui.add(galaxyParameters, 'count').min(100).max(100000).step(100).onFinishChange
 gui.add(galaxyParameters, 'size').min(0.001).max(0.1).step(0.001).onFinishChange(generateGalaxy)
 gui.add(galaxyParameters, 'radius').min(0.01).max(20).step(0.01).onFinishChange(generateGalaxy)
 gui.add(galaxyParameters, 'branches').min(2).max(20).step(1).onFinishChange(generateGalaxy)
+gui.add(galaxyParameters, 'spin').min(-5).max(5).step(0.001).onFinishChange(generateGalaxy)
 
 /**
  * Sizes
