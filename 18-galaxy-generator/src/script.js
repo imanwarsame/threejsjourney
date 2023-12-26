@@ -24,8 +24,10 @@ const scene = new THREE.Scene()
  * Galaxy
  */
 const galaxyParameters = {
-    count: 1000,
-    size: 0.02
+    count: 100000,
+    size: 0.01,
+    radius: 5,
+    branches: 3
 }
 
 let galaxyGeometry = null
@@ -47,10 +49,14 @@ const generateGalaxy = () => {
     // Array containing each particle positions [x,y,z, x,y,z, ...]
     const positions = new Float32Array(galaxyParameters.count * 3)
 
-    // Loop through 3 times the number of particles to generate x, y & z properties
-    for (let i = 0; i < galaxyParameters.count * 3; i++) {
-        // Random values between -0.5 and 0.5 multiplied by magnitude factor of 10
-        positions[i] = (Math.random() - 0.5) * 10        
+    // Loop through the number of particles to generate x, y & z properties
+    for (let i = 0; i < galaxyParameters.count; i++) {
+        const radius = Math.random() * galaxyParameters.radius
+        const branchAngle = ((i % galaxyParameters.branches) / galaxyParameters.branches) * Math.PI * 2
+
+        positions[(i * 3) + 0] = Math.cos(branchAngle) * radius
+        positions[(i * 3) + 1] = 0
+        positions[(i * 3) + 2] = Math.sin(branchAngle) * radius
     }
 
     // Create the Three.js BufferAttribute and specify that each object is composed of 3 parameters
@@ -74,6 +80,8 @@ generateGalaxy()
 // Add tweaks
 gui.add(galaxyParameters, 'count').min(100).max(100000).step(100).onFinishChange(generateGalaxy)
 gui.add(galaxyParameters, 'size').min(0.001).max(0.1).step(0.001).onFinishChange(generateGalaxy)
+gui.add(galaxyParameters, 'radius').min(0.01).max(20).step(0.01).onFinishChange(generateGalaxy)
+gui.add(galaxyParameters, 'branches').min(2).max(20).step(1).onFinishChange(generateGalaxy)
 
 /**
  * Sizes
